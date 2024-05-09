@@ -1,0 +1,10 @@
+---
+- name: Check RHEL OS version for hosts in inventory file
+  hosts: 10.10.2.115
+  gather_facts: yes
+
+  tasks:
+    - name: Display RHEL OS version
+      debug:
+        msg: "RHEL version for {{ ansible_hostname }} is {{ ansible_distribution_version }}"
+      when: ansible_distribution == 'RedHat'
