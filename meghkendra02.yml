@@ -1,98 +1,25 @@
----
-- name: Create a VM on ESXi host
-  hosts: meghkendra02.dcservices.in
-  gather_facts: no
-  # vars:
-  # ansible_python_interpreter: /usr/bin/python
-  vars_prompt:
-    - name: esxi_host
-      prompt: "Enter your vcenter hostname"
-      private: no 
-
-    - name: esxi_username
-      prompt: "Enter your login name"
-      private: no
-
-    - name: esxi_password
-      prompt: "Enter your password"
-      private: yes
-
-    - name: esxi_cluster
-      prompt: "Enter your cluster name"
-      private: no
-
-    - name: esxi_datacenter
-      prompt: "Enter your datacenter name"
-      private: no
-
-    - name: template_name
-      prompt: Name of the template you want to use
-      private: no
-
-    - name: vm_name
-      prompt: "Enter your vm name"
-      private: no
-
-
-    - name: vm_network_name
-      prompt: "Enter VLAN name to assign"
-      private: no
-
-    - name: vm_datastore
-      prompt: "Enter the name of datastore you want to use"
-      private: no
-      # vars:
-      # ansible_python_interpreter: /usr/bin/python
-    #name:
-    #prompt:
-    #private:
-
-    #esxi_host: testvc01.dcservices.in
-    #esxi_username: administrator@dcservices.in
-    #esxi_password: a1a1A!A!
-    #esxi_hostname: 10.10.109.23
-    #esxi_cluster: dccluster
-    #esxi_datacenter: DCTEST
-    #vm_name: 
-    #       - vmtest11
-    #       - vmtest12
-    #       - vmtest13
-    #vm_cpus: 8
-    #vm_memory_mb: 16384  # 4 GB RAM
-    #vm_disk_size_gb: 50  # 50 GB HDD
-    #vm_network_name: VLAN-80 # Replace with the name of your VLAN
-    #vm_datastore: datastore1  # Replace with your datastore name
-
-  tasks:
-    - name: Create a virtual machine on given ESXi hostname
-      community.vmware.vmware_guest:
-        hostname: "{{ esxi_host }}"
-        username: "{{ esxi_username }}"
-        password: "{{ esxi_password }}"
-        cluster: "{{ esxi_cluster }}"
-        datacenter: "{{ esxi_datacenter }}"
-        template: "{{ template_name }}"
-        validate_certs: no
-        folder: /
-        name: "{{ item }}"
-        state: poweredon
-        #    guest_id: centos64Guest
-    # This is hostname of particular ESXi server on which user wants VM to be deployed
-    #  esxi_hostname: "{{ esxi_hostname }}"
-                #scsi: paravirtual
-        networks:
-                - name: "{{ vm_network_name }}"
-                  device_type: vmxnet3 
-      delegate_to: localhost
-      register: deploy_vm
-      #  - debug:
-      #  msg: "{{ deploy_vm ))"
-      with_items: "{{ vm_name }}"
-
-    - name: Print VM information
-      debug:
-        msg: "VM {{ vm_name }} has been created on {{ esxi_host }} with {{ vm_cpus }} vCPU(s), {{ vm_memory_mb }} MB RAM, and a {{ vm_disk_size_gb }} GB HDD connected to {{ vm_network_name }} VLAN."
-
-    # You can add more tasks here if needed, such as configuring additional VM settings.
-
-
+- name:  Clone a virtual machine from Linux template and customize
+  community.vmware.vmware_guest:
+    hostname: "meghkendra02.dcservices.in"
+    username: "shubhendu@cdacnoida.in"
+    password: "$hubhendu.1812*"
+    datacenter: "CDAC-VDC02"
+    state: present
+    folder: /
+    template: "RHEL9.3"
+    name: "shubhtest"
+    cluster: UAT_Compute
+    networks:
+      - name: VLAN-999
+        ip: 10.10.2.244
+        netmask: 255.255.255.0
+    wait_for_ip_address: true
+    customization:
+      domain: "dcservices.in"
+      dns_servers:
+        - 10.226.0.11
+        - 10.226.0.12
+      script_text: |
+        #!/bin/bash
+        touch /tmp/touch-from-playbook
+  delegate_to: localhost
