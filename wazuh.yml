@@ -10,7 +10,7 @@
     - name: Replace IP address using sed
       become: yes
       replace:
-        path: /var/ossec/etc/ossec.conf
+        path: /var/ossec/etc/
         regexp: '^(.*)10\.10\.8\.32(.*)$'
         replace: '\110.10.2.24\2'
         backup: yes
