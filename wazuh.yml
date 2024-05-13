@@ -1,0 +1,15 @@
+---
+- name: Replace IP address in ossec.conf
+  hosts: 10.10.2.113
+  tasks:
+    - name: Read ossec.conf file
+      slurp:
+        path: /var/ossec/etc/ossec.conf
+      register: ossec_conf_file
+
+    - name: Replace IP address
+      replace:
+        path: /var/ossec/etc/ossec.conf
+        regexp: '10\.10\.8\.32'
+        replace: '10.10.2.24'
+      when: "'10.10.8.32' in ossec_conf_file.content | b64decode"
