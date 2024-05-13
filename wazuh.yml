@@ -1,17 +1,7 @@
 ---
-- name: Replace IP address in ossec.conf using sed
+- name: Replace IP address in ossec.conf using sed after login
   hosts: localhost
   tasks:
-    - name: Check if ossec.conf exists
-      stat:
-        path: /var/ossec/etc/
-      register: ossec_conf_stat
-
     - name: Replace IP address using sed
       become: yes
-      replace:
-        path: /var/ossec/etc/
-        regexp: '^(.*)10\.10\.8\.32(.*)$'
-        replace: '\110.10.2.24\2'
-        backup: yes
-      when: ossec_conf_stat.stat.exists
+      command: sed -i 's/10.10.8.32/10.10.2.24/g' /var/ossec/etc/ossec.conf
