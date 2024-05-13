@@ -1,7 +1,7 @@
 ---
 - name: Replace IP address in ossec.conf using sed after login
   hosts: localhost
+  become: yes
   tasks:
     - name: Replace IP address using sed
-      become: yes
       command: sed -i 's/10.10.8.32/10.10.2.24/g' /var/ossec/etc/ossec.conf
